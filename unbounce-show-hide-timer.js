@@ -1,22 +1,46 @@
 function unbounceShowHideTimer(hideAllExcept, timerInSeconds) {
-    let originalHeight = $("body").height()
+    
+    // Take the exact height that need to mantain
+    let idsOfSessionsToGetHeight = hideAllExcept.split(',')
+    let newHeight = 0
+    for (i = 0; i <= idsOfSessionsToGetHeight.length; i++) {
+        if (String(idsOfSessionsToGetHeight[i]).indexOf('-block-') !== -1) {
+            if ($(idsOfSessionsToGetHeight[i]).height() !== undefined) {
+                newHeight += $(idsOfSessionsToGetHeight[i]).height()
+            }
+        }
+    }
 
-    // Hide all except elements in argument "hideAllExcept".
-    $(".lp-pom-block").hide()
-    $(".lp-positioned-content > *").hide()
-    $(hideAllExcept).show()
+    $(document).ready(function () {
+        console.log("novotamanho:", newHeight)
+        let originalHeight = $("body").height()
 
-    // Setting the window height
-    $("body").height('0px') // Blocking user
-    $("body").css('overflow', 'hidden')
+        // Hide all except elements in argument "hideAllExcept".
+        $(".lp-pom-block").hide()
+        $(".lp-positioned-content > *").hide()
+        $('#lp-pom-root-color-overlay').hide()
+        $(hideAllExcept).show()
+        let interval = setInterval(function () {
+            $(".lp-pom-block").hide()
+            $(".lp-positioned-content > *").hide()
+            $('#lp-pom-root-color-overlay').hide()
+            $(hideAllExcept).show()
+        }, 500)
 
-    // Set timer to display content again.
-    setTimeout(function () {
-        $(".lp-pom-block").show()
-        $(".lp-positioned-content > *").css("display", "")
+        // Setting the window height
+        $("#lp-pom-root").height(newHeight) // Blocking user
 
-        // Back to original size
-        $("body").height(originalHeight)
-        $("body").css('overflow', '')
-    }, timerInSeconds * 1000)
+        // Set timer to display content again.
+        setTimeout(function () {
+            clearInterval(interval)
+            $(".lp-pom-block").show()
+            $(".lp-positioned-content > *").css("display", "")
+            $('#lp-pom-root-color-overlay').show()
+            
+            // Back to original size
+            $("#lp-pom-root").height(originalHeight)
+        }, timerInSeconds * 1000)
+
+    })
+
 }
